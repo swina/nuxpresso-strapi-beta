@@ -74,7 +74,7 @@ const createSeedData = async () => {
 }
 
 module.exports = async () => {
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === 'production') {
       const params = {
         username: process.env.DEV_USER || 'admin',
         password: process.env.DEV_PASS || 'password',
@@ -110,6 +110,7 @@ module.exports = async () => {
           strapi.log.error(`Couldn't create Admin account during bootstrap: `, error);
         }
       }
+    }
       //Set permission for Authenticated
       await setDefaultPermissions('application');
       await setDefaultPermissions('upload');
@@ -120,6 +121,6 @@ module.exports = async () => {
       if ( qryComponents.length === 0 ){
         await createSeedData();
       }
-    }
+    
   };
   
