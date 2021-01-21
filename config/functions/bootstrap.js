@@ -34,13 +34,12 @@ const findPublicRole = async () => {
 
 
 const {
-  elements,
   settings,
   articles
 } = require("../../data/data");
 
-const { blocks } = require ( '../../data/blocks')
-
+const { blocks } = require ( '../../data/blocks' )
+const { elements } = require ( '../../data/elements' )
 const createSeedData = async () => {
   console.log ( 'Import data ...')
   const componentsPromises = blocks.map(({
@@ -74,7 +73,8 @@ const createSeedData = async () => {
 }
 
 module.exports = async () => {
-    if (process.env.NODE_ENV === 'production') {
+    //admin user creation only in development
+    if (process.env.NODE_ENV === 'development') {
       const params = {
         username: process.env.DEV_USER || 'admin',
         password: process.env.DEV_PASS || 'password',
@@ -111,16 +111,17 @@ module.exports = async () => {
         }
       }
     }
+    
+
+    //add initial data check if imported components imported (run on first run)
+    const qryComponents = await strapi.query('components').find()
+    if ( qryComponents.length === 0 ){
       //Set permission for Authenticated
       await setDefaultPermissions('application');
       await setDefaultPermissions('upload');
       await setDefaultPermissions('email');
-
-      //add initial data
-      const qryComponents = await strapi.query('components').find()
-      if ( qryComponents.length === 0 ){
-        await createSeedData();
-      }
+      await createSeedData();
+    }
     
   };
   
